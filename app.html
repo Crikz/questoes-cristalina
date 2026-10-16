@@ -1,0 +1,523 @@
+<title>Questões Cristalina</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* v12: explicação aparece automaticamente após responder (botão só esconde). Layout: uma coluna de leitura, barra fixa com contagem regressiva e abas; alternativas desenhadas como bolhas de cartão-resposta. */
+:root{
+  --paper:#f4f6f9; --card:#ffffff; --ink:#172033; --muted:#5b6578; --line:#d8dde6;
+  --pen:#1f4fd1; --pen-soft:#e4ebfd; --ok:#1d8a4b; --ok-soft:#e1f3e8; --bad:#c2362f; --bad-soft:#fbe7e5;
+  --display:"Archivo","Arial Narrow",system-ui,sans-serif; --body:"Atkinson Hyperlegible",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0e131b; --card:#161d28; --ink:#e6ebf3; --muted:#98a3b5; --line:#2a3445;
+  --pen:#8aaeff; --pen-soft:#1d2a47; --ok:#4cc382; --ok-soft:#14301f; --bad:#ff8077; --bad-soft:#3a1a18; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0e131b; --card:#161d28; --ink:#e6ebf3; --muted:#98a3b5; --line:#2a3445;
+  --pen:#8aaeff; --pen-soft:#1d2a47; --ok:#4cc382; --ok-soft:#14301f; --bad:#ff8077; --bad-soft:#3a1a18; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font:16px/1.55 var(--body);margin:0}
+.wrap{max-width:760px;margin:0 auto;padding-inline:16px;padding-block:0 48px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);border-bottom:1px solid var(--line)}
+.top .wrap{padding-block:12px 0}
+.brand{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand h1{font:800 22px/1.1 var(--display);font-stretch:85%;margin:0;letter-spacing:.01em;text-wrap:balance}
+.brand small{display:block;font:500 12px/1.3 var(--body);color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-top:2px}
+.count{font:600 13px/1.2 var(--mono);color:var(--muted);text-align:right}
+.count b{display:block;font:800 28px/1 var(--display);color:var(--pen);font-variant-numeric:tabular-nums}
+nav.tabs{display:flex;gap:4px;margin-top:10px;overflow-x:auto}
+nav.tabs button{font:700 14px var(--body);border:0;background:none;color:var(--muted);padding:10px 12px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--pen)}
+nav.tabs .pill{font:600 11px var(--mono);background:var(--bad-soft);color:var(--bad);border-radius:999px;padding:1px 7px;margin-left:4px}
+button:focus-visible,a:focus-visible{outline:2px solid var(--pen);outline-offset:2px}
+main{display:grid;gap:16px;padding-top:18px}
+.daybar{display:flex;align-items:center;gap:8px}
+.daybar h2{flex:1;margin:0;font:700 20px/1.2 var(--display);font-stretch:90%;text-wrap:balance}
+.daybar h2 span{display:block;font:500 13px var(--body);color:var(--muted)}
+.iconbtn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;width:40px;height:40px;font-size:18px;cursor:pointer}
+.iconbtn:disabled{opacity:.35;cursor:default}
+.themes{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font:600 12px var(--body);letter-spacing:.04em;text-transform:uppercase;border:1px solid var(--line);border-radius:999px;padding:4px 10px;color:var(--muted);background:var(--card)}
+.chip.ti{color:var(--pen);border-color:var(--pen)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.empty{text-align:left;color:var(--muted)}
+.empty h3{color:var(--ink);font:700 17px var(--display);margin:0 0 6px}
+details.pilula summary{cursor:pointer;font:700 15px var(--display);list-style:none;display:flex;justify-content:space-between;gap:8px}
+details.pilula summary::after{content:"mostrar";font:500 13px var(--body);color:var(--pen)}
+details.pilula[open] summary::after{content:"esconder"}
+.md{max-width:65ch}
+.md h3{font:700 16px var(--display);margin:16px 0 4px}
+.md p{margin:6px 0}
+.md ul{margin:6px 0;padding-left:20px}
+.md code{font:500 14px var(--mono);background:var(--pen-soft);padding:0 4px;border-radius:4px}
+.progress{display:flex;gap:16px;flex-wrap:wrap;font:600 14px var(--body);color:var(--muted)}
+.progress b{font:600 15px var(--mono);color:var(--ink)}
+.q{display:grid;gap:12px}
+.qhead{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font:600 12px var(--body);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.qhead .n{font:600 13px var(--mono);color:var(--ink);letter-spacing:0}
+.enun{white-space:pre-line;max-width:65ch}
+.alts{display:grid;gap:8px}
+.alt{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:10px 12px;font:16px/1.45 var(--body);cursor:pointer}
+.alt:hover:not(:disabled){border-color:var(--pen)}
+.alt:disabled{cursor:default}
+.bub{flex:0 0 auto;width:28px;height:22px;border:2px solid var(--muted);border-radius:50%;display:grid;place-items:center;font:600 12px var(--mono);color:var(--muted);margin-top:1px}
+.alt.marc .bub{background:var(--pen);border-color:var(--pen);color:var(--card)}
+.alt.certa{border-color:var(--ok);background:var(--ok-soft)}
+.alt.certa .bub{background:var(--ok);border-color:var(--ok);color:var(--card)}
+.alt.errada{border-color:var(--bad);background:var(--bad-soft)}
+.alt.errada .bub{background:var(--bad);border-color:var(--bad);color:var(--card)}
+.coment{border-left:3px solid var(--line);padding-left:12px;color:var(--ink);max-width:65ch}
+.coment b.ok{color:var(--ok)} .coment b.bad{color:var(--bad)}
+.list{display:grid;gap:8px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;text-align:left;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px 14px;font:16px var(--body);cursor:pointer}
+.row small{display:block;color:var(--muted);font-size:13px}
+.row .tag{font:600 13px var(--mono);color:var(--bad);white-space:nowrap}
+.row .go{font:600 13px var(--mono);color:var(--pen);white-space:nowrap}
+#adiantar{border-color:var(--pen);background:var(--pen-soft)}
+.adiant{background:var(--pen-soft);border-color:var(--pen);font-size:15px}
+.foco{display:grid;gap:12px}
+.fhead{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.fhead b{font:700 16px var(--display);color:var(--ink)}
+.dots{display:flex;gap:6px;flex-wrap:wrap}
+.dot{width:32px;height:32px;border-radius:50%;border:2px solid var(--line);background:var(--card);color:var(--muted);font:600 12px var(--mono);cursor:pointer;display:grid;place-items:center;padding:0}
+.dot.ok{background:var(--ok);border-color:var(--ok);color:var(--card)}
+.dot.bad{background:var(--bad);border-color:var(--bad);color:var(--card)}
+.dot.cur{outline:3px solid var(--pen);outline-offset:2px;color:var(--ink)}
+.dot.ok.cur,.dot.bad.cur{color:var(--card)}
+.veredito{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;border-radius:10px;padding:10px 12px}
+.veredito.ok{background:var(--ok-soft);color:var(--ok)} .veredito.bad{background:var(--bad-soft);color:var(--bad)}
+.explic{font:700 14px var(--body);border:1px solid currentColor;background:var(--card);color:inherit;border-radius:8px;padding:8px 12px;cursor:pointer}
+.fnav{display:flex;justify-content:space-between;gap:10px;position:sticky;bottom:0;background:var(--paper);padding:10px 0 calc(10px + env(safe-area-inset-bottom,0px));box-shadow:0 -10px 14px -6px var(--paper);z-index:3}
+.btn-ant,.btn-prox{font:700 16px var(--display);border-radius:12px;padding:14px 18px;cursor:pointer;min-height:48px}
+.btn-ant{background:var(--card);color:var(--ink);border:1px solid var(--line)} .btn-ant:disabled{color:var(--line);cursor:default}
+.btn-prox{background:var(--pen);color:var(--card);border:0;flex:1;max-width:280px;margin-left:auto}
+.explicar-ia{font:700 14px var(--body);border:1px solid var(--pen);background:var(--pen-soft);color:var(--pen);border-radius:8px;padding:8px 12px;cursor:pointer;margin-top:6px}
+.selo{justify-self:start;font:600 12px var(--body);letter-spacing:.04em;color:var(--pen);border:1px solid var(--pen);border-radius:6px;padding:3px 8px}
+.q.real{border-color:var(--pen)}
+details.base summary{cursor:pointer;font:600 14px var(--body);color:var(--pen)}
+details.base .md{margin-top:8px;font-size:15px;max-height:360px;overflow:auto}
+.resultado{display:grid;gap:8px;border-color:var(--bad);background:var(--bad-soft)}
+.resultado.ok{border-color:var(--ok);background:var(--ok-soft)}
+.resultado h3{margin:0;font:700 18px var(--display)}
+.resultado p{margin:0;max-width:65ch}
+.btn-refazer{justify-self:start;font:800 16px var(--display);letter-spacing:.08em;background:var(--pen);color:var(--card);border:0;border-radius:10px;padding:12px 22px;cursor:pointer}
+.btn-refazer:disabled{opacity:.5;cursor:default}
+.resumo{display:grid;gap:8px;padding:12px 14px}
+.rever{display:flex;justify-content:space-between;align-items:center;gap:8px;background:none;border:0;padding:0;cursor:pointer;font:500 14px var(--body);color:var(--muted);text-align:left}
+.rever b{font:700 15px var(--display);color:var(--ink)}
+.refazer-x{justify-self:start;font:800 14px var(--display);letter-spacing:.04em;background:var(--pen);color:var(--card);border:0;border-radius:8px;padding:9px 14px;cursor:pointer}
+.refazer-x small{font:500 12px var(--body);opacity:.85;margin-left:4px}
+.sair{font:600 13px var(--body);background:none;border:1px solid var(--line);border-radius:6px;padding:2px 8px;margin-left:6px;color:var(--muted);cursor:pointer}
+details.tent summary{cursor:pointer;font:700 15px var(--display)}
+details.tent .tentbody{display:grid;gap:12px;margin-top:12px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+.stat b{display:block;font:800 30px/1 var(--display);font-variant-numeric:tabular-nums}
+.stat span{font-size:13px;color:var(--muted)}
+.bars{display:grid;gap:12px}
+.bar{display:grid;gap:4px}
+.bar .lbl{display:flex;justify-content:space-between;gap:8px;font-size:14px}
+.bar .lbl span:last-child{font:600 13px var(--mono);color:var(--muted);white-space:nowrap}
+.track{height:10px;border-radius:999px;background:var(--line);overflow:hidden}
+.fill{height:100%;border-radius:999px;background:var(--pen)}
+.fill.low{background:var(--bad)} .fill.mid{background:#c98a12} .fill.high{background:var(--ok)}
+h3.sec{font:700 16px var(--display);margin:4px 0 0}
+.note{font-size:13px;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:10px;font-size:14px}
+@media (max-width:640px){header.top{position:static}.brand h1{font-size:20px}.count b{font-size:22px;display:inline;margin-right:6px}.count{text-align:left}.top .wrap{padding-block:10px 0}.dots{flex-wrap:nowrap;overflow-x:auto;padding:4px 2px;scrollbar-width:none}.dots::-webkit-scrollbar{display:none}.dot{flex:0 0 28px;width:28px;height:28px;font-size:11px}.foco{gap:8px}details.pilula{padding-block:10px}}
+@media (prefers-reduced-motion:no-preference){.alt,.row{transition:border-color .15s,background .15s}}
+</style>
+
+<header class="top"><div class="wrap">
+  <div class="brand">
+    <div><h1>Questões Cristalina</h1><small>Analista de TI · Câmara Municipal · Consulplan</small></div>
+    <div class="count"><b id="dias">--</b>dias para a prova · 20/12</div>
+  </div>
+  <nav class="tabs" role="tablist">
+    <button role="tab" id="tab-hoje" aria-selected="true" data-v="hoje">Hoje</button>
+    <button role="tab" id="tab-atr" aria-selected="false" data-v="atrasadas">Atrasadas<span class="pill" id="pill-atr" hidden></span></button>
+    <button role="tab" id="tab-des" aria-selected="false" data-v="desempenho">Desempenho</button>
+    <button role="tab" id="tab-err" aria-selected="false" data-v="erros">Caderno de erros<span class="pill" id="pill-err" hidden></span></button>
+  </nav>
+</div></header>
+
+<div class="wrap"><main id="main" aria-live="polite"></main></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(function(){
+const PROVA = "2026-12-20", INICIO = "2026-10-04";
+const SEMANAS = [
+  ["2026-10-04","Redes I: OSI, TCP/IP, IPv4, equipamentos, roteamento","Língua Portuguesa"],
+  ["2026-10-11","Redes II: DNS, DHCP, NAT, serviços, LDAP, VPN, Wi-Fi, SNMP","Direito Constitucional"],
+  ["2026-10-18","Sistemas operacionais, Linux/Windows, arquitetura e virtualização","Direito Administrativo"],
+  ["2026-10-25","Segurança da informação, backup e criptografia","Lei 14.133/2021 e Improbidade"],
+  ["2026-11-01","Banco de dados: modelo relacional, SQL, normalização","LGPD, LAI e Lei 9.784/1999"],
+  ["2026-11-08","ITIL, COBIT, gestão de TI e BI","Lei Orgânica de Cristalina"],
+  ["2026-11-15","Web, servidores web, nuvem e DevOps","Regimento Interno e Estatuto"],
+  ["2026-11-22","Revisão de TI pelos erros","Raciocínio lógico e Informática básica"],
+  ["2026-11-29","Questões Consulplan de TI","Simulado 1 e Português"],
+  ["2026-12-06","Revisão geral","Simulado 2 e legislação municipal"],
+  ["2026-12-13","Revisão leve","Simulado 3 e descanso"]
+];
+const L = "ABCDE";
+const $ = s => document.querySelector(s);
+const main = $("#main");
+let revendo = null, revisao = null, cursor = {}, fechado = new Set(), explic = new Set(), ocultar = new Set(), banco = new Map(), explicando = new Set();
+let db = null, sample = null, gerando = null, gerandoExtra = null, extras = new Map(), rodadas = new Map(), dias = new Map(), resp = new Map(), view = "hoje", dia = hoje(), loaded = {dias:false, resp:false}, refazendo = null;
+
+function hoje(){ return new Intl.DateTimeFormat("en-CA",{timeZone:"America/Sao_Paulo"}).format(new Date()); }
+function addDias(d,n){ const t=new Date(d+"T12:00:00Z"); t.setUTCDate(t.getUTCDate()+n); return t.toISOString().slice(0,10); }
+function diff(a,b){ return Math.round((new Date(b+"T12:00:00Z")-new Date(a+"T12:00:00Z"))/864e5); }
+function fmt(d,opts){ return new Date(d+"T12:00:00Z").toLocaleDateString("pt-BR",Object.assign({timeZone:"UTC"},opts)); }
+function semanaDe(d){ let i=-1; SEMANAS.forEach((s,k)=>{ if(d>=s[0]) i=k; }); return i; }
+function esc(s){ return String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function md(src){
+  const out=[]; let ul=false;
+  String(src||"").split("\n").forEach(line=>{
+    let t=esc(line).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/`(.+?)`/g,"<code>$1</code>");
+    if(/^- /.test(line)){ if(!ul){out.push("<ul>");ul=true;} out.push("<li>"+t.slice(2)+"</li>"); return; }
+    if(ul){out.push("</ul>");ul=false;}
+    if(/^## /.test(line)) out.push("<h3>"+t.slice(3)+"</h3>"); else if(line.trim()) out.push("<p>"+t+"</p>");
+  });
+  if(ul) out.push("</ul>");
+  return out.join("");
+}
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.hidden=false; clearTimeout(toast.h); toast.h=setTimeout(()=>t.hidden=true,3200); }
+function qIndex(){ const m=new Map(); dias.forEach(d=>(d.questoes||[]).forEach(q=>m.set(q.id,Object.assign({dia:d.dia},q)))); rodadas.forEach(r=>(r.questoes||[]).forEach(q=>m.set(q.id,Object.assign({dia:r.dia},q)))); extras.forEach(r=>(r.questoes||[]).forEach(q=>m.set(q.id,Object.assign({dia:r.dia},q)))); return m; }
+function estat(lista){ const feitas=lista.filter(q=>resp.has(q.id)), ac=feitas.filter(q=>resp.get(q.id).acerto).length; return {feitas:feitas.length,acertos:ac,total:lista.length,completa:lista.length>0&&feitas.length===lista.length}; }
+function extrasDe(dd){ return [...extras.values()].filter(x=>x.dia===dd).sort((a,b)=>a.n-b.n).map(x=>Object.assign({},x,estat(x.questoes||[]))); }
+const META = 0.8;
+function tentativas(dd){
+  const d=dias.get(dd); if(!d) return [];
+  const t=[{id:"orig",n:1,questoes:d.questoes||[]}];
+  [...rodadas.values()].filter(r=>r.dia===dd).sort((a,b)=>a.n-b.n).forEach(r=>t.push({id:r.id,n:r.n,questoes:r.questoes||[],gerada:r.gerada}));
+  return t.map(x=>{ const feitas=x.questoes.filter(q=>resp.has(q.id)), ac=feitas.filter(q=>resp.get(q.id).acerto).length, meta=Math.ceil(x.questoes.length*META);
+    return Object.assign(x,{feitas:feitas.length,acertos:ac,total:x.questoes.length,meta,completa:x.questoes.length>0&&feitas.length===x.questoes.length,aprovada:feitas.length===x.questoes.length&&ac>=meta}); });
+}
+function aprovado(dd){ const t=tentativas(dd); return !t.length || t.some(x=>x.aprovada); }
+function liberado(dd){ return dd<=hoje() || aprovado(addDias(dd,-1)); }
+function embaralha(q,seed){
+  const ord=q.alts.map((_,k)=>k); let s=seed; for(let i=ord.length-1;i>0;i--){ s=(s*9301+49297)%233280; const j=Math.floor(s/233280*(i+1)); [ord[i],ord[j]]=[ord[j],ord[i]]; }
+  return Object.assign({},q,{alts:ord.map(k=>q.alts[k]),correta:ord.indexOf(q.correta)});
+}
+function atrasadas(){
+  const h=hoje(), out=[];
+  [...dias.values()].filter(d=>d.dia<h).sort((a,b)=>a.dia<b.dia?-1:1).forEach(d=>{
+    const pend=(d.questoes||[]).filter(q=>!resp.has(q.id)).length; if(pend) out.push({dia:d.dia,pend,total:d.questoes.length});
+  });
+  return out;
+}
+function erros(){ return [...resp.values()].filter(r=>!r.acerto && !(r.refeita&&r.refeita.acerto)); }
+
+function header(){
+  $("#dias").textContent=Math.max(0,diff(hoje(),PROVA));
+  const a=atrasadas().reduce((s,x)=>s+x.pend,0), e=erros().length;
+  $("#pill-atr").hidden=!a; $("#pill-atr").textContent=a;
+  $("#pill-err").hidden=!e; $("#pill-err").textContent=e;
+  document.querySelectorAll("nav.tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.v===view));
+}
+
+function qCard(q,i,r,modo,bid){
+  const ans = (modo==="refazer"||modo==="revisao") ? (r.refeita||null) : r, foco = modo==="foco"||modo==="revisao";
+  const marc = ans ? ans.escolha : null;
+  const alts = q.alts.map((a,k)=>{
+    let cls="alt";
+    if(ans){ if(k===q.correta) cls+=" certa"; else if(k===marc) cls+=" errada"; }
+    return `<button class="${cls}" data-q="${esc(q.id)}" data-k="${k}" data-modo="${modo==="foco"?"normal":modo==="revisao"?"refazer":modo}" data-bid="${esc(bid||"")}" data-i="${i}" ${ans?"disabled":""} aria-label="Alternativa ${L[k]}"><span class="bub">${L[k]}</span><span>${esc(a)}</span></button>`;
+  }).join("");
+  const com = q.comentario || (q.origem && banco.get(q.origem) && banco.get(q.origem).comentario) || "";
+  const comBox = com ? `<div class="coment">${md(com)}</div>` : `<div class="coment"><p>Questão real sem comentário ainda. Gabarito oficial: <b>${L[q.correta]}</b>.</p>${q.origem&&banco.has(q.origem)?`<button class="explicar-ia" data-q="${esc(q.id)}" ${explicando.has(q.id)?"disabled":""}>${explicando.has(q.id)?"Explicando…":"Explicar com o Claude"}</button><span class="note"> · usa sua cota uma única vez; a explicação fica salva</span>`:""}</div>`;
+  const res = !ans ? "" : foco ? `<div class="veredito ${ans.acerto?"ok":"bad"}"><b>${ans.acerto?"Você acertou!":"Você errou. Gabarito: "+L[q.correta]}</b><button class="explic" data-q="${esc(q.id)}">${ocultar.has(q.id)?"Ver explicação":"Esconder explicação"}</button></div>${ocultar.has(q.id)?"":comBox}` : `<div class="coment"><b class="${ans.acerto?"ok":"bad"}">${ans.acerto?"Correto.":"Errado. Gabarito: "+L[q.correta]+"."}</b></div>${comBox}`;
+  const extra = (modo==="refazer"||modo==="revisao") ? `<div class="note">Original de ${fmt(q.dia,{day:"2-digit",month:"2-digit"})} · você marcou ${L[r.escolha]}</div>` : "";
+  const r_total = (q._total||0);
+  const f=q.fonte, selo = f ? `<div class="selo">Questão real · ${esc(f.banca)} · ${esc(f.orgao)} · ${f.ano}${f.status==="preliminar"?" · gabarito preliminar":""}</div>` : "";
+  const base = q.texto_base ? `<details class="base" data-k="b:${esc(modo)}:${esc(q.id)}"><summary>Texto-base da questão</summary><div class="md">${md(q.texto_base)}</div></details>` : "";
+  return `<article class="card q${f?" real":""}" id="q-${esc(q.id)}"><div class="qhead"><span class="n">${modo==="revisao"?"Revisão "+(i+1)+" de "+r_total:modo==="refazer"?"Revisão":modo==="foco"?"Questão "+(i+1)+" de "+r_total:"Questão "+String(i+1).padStart(2,"0")}</span><span>${esc(q.materia)} · ${esc(q.assunto)}</span></div>${selo}${extra}${base}<div class="enun">${esc(q.enunciado)}</div><div class="alts">${alts}</div>${res}</article>`;
+}
+
+function renderHoje(){
+  const d=dias.get(dia), h=hoje(), w=semanaDe(dia);
+  const nav=`<div class="daybar"><button class="iconbtn" id="prev" aria-label="Dia anterior" ${dia<=INICIO?"disabled":""}>‹</button><h2>${dia===h?"Hoje, ":""}${fmt(dia,{weekday:"long",day:"numeric",month:"long"})}<span>${w>=0?"Semana "+(w+1)+" de 11":"Antes do início do cronograma"}</span></h2><button class="iconbtn" id="next" aria-label="Próximo dia" ${dia>=addDias(PROVA,-1)||(loaded.dias&&!liberado(addDias(dia,1)))?"disabled":""}>›</button></div>`;
+  const themes = d ? `<div class="themes"><span class="chip ti">TI · ${esc(d.ti)}</span><span class="chip">${esc(d.basico.materia)} · ${esc(d.basico.tema)}</span></div>`
+    : (w>=0?`<div class="themes"><span class="chip ti">TI · ${esc(SEMANAS[w][1])}</span><span class="chip">${esc(SEMANAS[w][2])}</span></div>`:"");
+  if(!loaded.dias || (db && !loaded.resp)){ main.innerHTML=nav+themes+`<div class="card empty"><h3>Carregando questões…</h3></div>`; return; }
+  if(!d){
+    const p1=dias.get(addDias(dia,1));
+    if(p1){ main.innerHTML=nav+themes+`<div class="card empty"><h3>Sem questões neste dia</h3><p>As questões começam no próximo dia. Quer começar agora?</p></div><button class="row" id="adiantar"><span>Começar ${fmt(p1.dia,{weekday:"long",day:"numeric",month:"long"})}<small>${esc(p1.ti)}</small></span><span class="go">${(p1.questoes||[]).length} questões ›</span></button>`; return; }
+    main.innerHTML=nav+themes+`<div class="card empty"><h3>As questões deste dia ainda não foram carregadas</h3><p>Peça no chat do Claude: “carregar as questões da semana ${w>=0?w+1:1}”. Elas aparecem aqui assim que forem salvas, sem precisar recarregar.</p><p class="note">Seu dia: estude no primeiro horário da manhã; se não der, no almoço ou à noite. Dia que passar sem fazer vai para a aba Atrasadas.</p></div>`;
+    return;
+  }
+  if(!liberado(dia)){
+    const ant=addDias(dia,-1), ta=tentativas(ant), u=ta[ta.length-1];
+    main.innerHTML=nav+themes+`<div class="card empty"><h3>Dia bloqueado</h3><p>Para adiantar, acerte pelo menos 80% em uma tentativa do dia anterior (${fmt(ant,{weekday:"long",day:"numeric",month:"numeric"})}). ${u&&u.completa?`Sua última tentativa: <b>${u.acertos}/${u.total}</b>. Use o botão REFAZER lá.`:"Termine as questões dele primeiro."}</p></div><button class="row" data-dia="${ant}"><span>Voltar para ${fmt(ant,{weekday:"long"})}<small>${esc((dias.get(ant)||{}).ti||"")}</small></span><span class="go">‹ ir</span></button>`;
+    return;
+  }
+  const ts=tentativas(dia), ult=ts[ts.length-1], ok=ts.some(x=>x.aprovada), primeira=ts[0];
+  const pil = d.pilula ? `<details class="card pilula" data-k="pil:${dia}"><summary>Pílula de teoria · 5 min</summary><div class="md">${md(d.pilula)}</div></details>` : "";
+  const futuro = dia>h ? `<div class="card adiant"><b>Adiantando ${fmt(dia,{weekday:"long"})}.</b> As questões que ficarem continuam aqui para o dia certo.</div>` : "";
+  const bloco = t => {
+    const titulo = t.n===1 ? "Questões do dia" : `Rodada ${t.n} · refazer`;
+    const prog = `<div class="progress"><span><b>${t.feitas}/${t.total}</b> respondidas</span><span><b>${t.acertos}</b> acertos · meta ${t.meta}</span>${t.completa?`<span>${t.aprovada?"Aprovada":"Abaixo da meta"} · <b>${Math.round(t.acertos/t.total*100)}%</b></span>`:""}</div>`;
+    const cards = t.questoes.map((q,i)=>qCard(Object.assign({dia:dia},q),i,resp.get(q.id),"normal")).join("");
+    if(t!==ult) return `<details class="card tent" data-k="tn:${esc(t.id)}"><summary>${titulo} · ${t.acertos}/${t.total} ${t.aprovada?"· aprovada":""}</summary><div class="tentbody">${cards}</div></details>`;
+    return `<h3 class="sec">${titulo}${t.n>1&&t.gerada?` <span class="note">· ${t.gerada} questões novas, parecidas com as que você errou</span>`:""}</h3>${prog}${cards}`;
+  };
+  let fim = "";
+  if(gerando===dia){
+    fim = `<div class="card adiant"><b>Montando a rodada ${ult.n+1}…</b> Gerando questões parecidas com as que você errou. Pode levar até um minuto.</div>`;
+  } else if(ult.completa && !ok){
+    const err=ult.total-ult.acertos;
+    fim = `<div class="card resultado"><h3>${ult.acertos} de ${ult.total}: faltou pouco para a meta de ${ult.meta}</h3><p>O REFAZER monta uma nova rodada com as <b>${ult.acertos}</b> que você acertou (para fixar) e <b>${err}</b> questões novas, parecidas com as que você errou. Releia os comentários das erradas antes.</p><button class="btn-refazer" id="refazer" data-t="${esc(ult.id)}">REFAZER</button></div>`;
+  }
+  const prox=addDias(dia,1), proxD=dias.get(prox), proxPend=proxD?(proxD.questoes||[]).filter(q=>!resp.has(q.id)).length:0;
+  const adiantar = (ok && dia>=h && proxD && proxPend) ? `<div class="card resultado ok"><h3>Meta batida!</h3><p>Dia aprovado. Se o dia está tranquilo, pode adiantar.</p></div><button class="row" id="adiantar"><span>Adiantar ${fmt(prox,{weekday:"long",day:"numeric",month:"long"})}<small>${esc(proxD.ti)}</small></span><span class="go">${proxPend} questões ›</span></button>`
+    : (ok && ult.completa ? `<div class="card resultado ok"><h3>Meta batida!</h3><p>Dia aprovado.</p></div>` : "");
+  const xs=extrasDe(dia), ultX=xs[xs.length-1];
+  const blocoX = (x,i) => {
+    const cards = x.questoes.map((q,k)=>qCard(Object.assign({dia:dia},q),k,resp.get(q.id),"normal")).join("");
+    const pct = x.completa ? ` · <b>${Math.round(x.acertos/x.total*100)}%</b>` : "";
+    if(x!==ultX) return `<details class="card tent" data-k="xn:${esc(x.id)}"><summary>Extra ${x.n} · ${x.acertos}/${x.total}</summary><div class="tentbody">${cards}</div></details>`;
+    return `<h3 class="sec">Extra ${x.n} <span class="note">· +${x.total} questões do tema</span></h3><div class="progress"><span><b>${x.feitas}/${x.total}</b> respondidas</span><span><b>${x.acertos}</b> acertos${pct}</span></div>${cards}`;
+  };
+  let mais = "";
+  if(false)
+    mais += `<div class="card resultado"><h3>${ultX.base?"Refazer":"Extra "+ultX.n}: ${ultX.acertos} de ${ultX.total}</h3><p>O REFAZER traz as <b>${ultX.total-ultX.acertos}</b> que você errou, com as alternativas embaralhadas, e uma questão parecida do banco para cada uma. Não gasta cota.</p><button class="btn-refazer" id="refazer-x" data-x="${esc(ultX.id)}">REFAZER</button></div>`;
+  const nErr = erros().length;
+  if(nErr>=10 && ult.completa && (!ultX || ultX.completa)) mais += `<button class="row" id="ir-caderno"><span>Refazer 10 do caderno de erros<small>${nErr} questões erradas acumuladas</small></span><span class="go">refazer ›</span></button>`;
+  if(gerandoExtra===dia) mais = `<div class="card adiant"><b>Gerando mais 10 questões…</b> No estilo da banca, puxando os assuntos em que você mais erra. Pode levar até um minuto.</div>`;
+  if(gerandoExtra!==dia && ult.completa && (!ultX || ultX.completa)){
+    const disp=disponiveis(), tags=tagsDoDia(dia), doTema=disp.filter(b=>(b.tags||[]).some(t=>tags.ti.includes(t)||tags.bas.includes(t))).length;
+    mais += disp.length ? `<button class="row" id="mais"><span>+10 questões do banco<small>${doTema} do tema de hoje · ${disp.length} no banco ao todo</small></span><span class="go">puxar ›</span></button>` : "";
+    if(disp.length<10 || doTema<4) mais += `<button class="row" id="gerar"><span>Gerar 10 com o Claude<small>${disp.length?"Poucas do tema no banco.":"Banco esgotado."} Usa a sua cota de uso.</small></span><span class="go">gerar ›</span></button>`;
+  }
+  const blocos=[...ts.map(t=>({id:"t:"+t.id,titulo:t.n===1?"Questões do dia":`Rodada ${t.n} · refazer`,questoes:t.questoes,st:t,meta:t.meta})),
+                ...xs.map(x=>({id:"x:"+x.id,titulo:x.base?`Refazer · Extra ${(extras.get(x.base)||{}).n||""}`:`Extra ${x.n}`,questoes:x.questoes,st:x}))];
+  const lastB=blocos[blocos.length-1];
+  // ativo: bloco aberto para rever > bloco incompleto mais recente > último bloco ainda não fechado
+  const rv = revendo && blocos.find(b=>b.id===revendo), incomp = [...blocos].reverse().find(b=>!b.st.completa);
+  const ativo = rv || incomp || (lastB && cursor[lastB.id]!==undefined && !fechado.has(lastB.id) ? lastB : null);
+  const podeRefazerX = b => b.id.startsWith("x:") && b.st.completa && b.st.acertos<b.st.total && !xs.some(x=>x.base===b.id.slice(2));
+  const resumo = b => `<div class="card resumo"><button class="rever" data-bid="${esc(b.id)}"><b>${b.titulo}</b><span>${b.st.acertos}/${b.st.total}${b.st.completa?` · ${Math.round(b.st.acertos/b.st.total*100)}%`:""} · ${b.st.completa?"rever":"continuar"} ›</span></button>${podeRefazerX(b)?`<button class="refazer-x" data-x="${esc(b.id.slice(2))}">REFAZER as ${b.st.total-b.st.acertos} erradas <small>sem gastar cota</small></button>`:""}</div>`;
+  const resumos = blocos.filter(b=>b!==ativo).map(resumo).join(""); let corpo = "";
+  if(ativo){
+    const qs=ativo.questoes, prim=qs.findIndex(q=>!resp.has(q.id));
+    let i = cursor[ativo.id]; if(i===undefined||i<0||i>=qs.length) i = prim<0 ? qs.length-1 : prim;
+    const q=qs[i], r=resp.get(q.id);
+    const dots = qs.map((x,k)=>{ const rx=resp.get(x.id); return `<button class="dot${rx?(rx.acerto?" ok":" bad"):""}${k===i?" cur":""}" data-bid="${esc(ativo.id)}" data-i="${k}" aria-label="Ir para a questão ${k+1}">${k+1}</button>`; }).join("");
+    const proxPend = qs.findIndex((x,k)=>k>i && !resp.has(x.id)), temProx = i<qs.length-1;
+    const avancar = r ? (ativo.st.completa && proxPend<0 && !temProx ? `<button class="btn-prox" id="fechar" data-bid="${esc(ativo.id)}">Ver resultado ›</button>` : `<button class="btn-prox" id="prox" data-bid="${esc(ativo.id)}" data-i="${proxPend>=0?proxPend:i+1}">Próxima ›</button>`) : "";
+    corpo += `<section class="foco"><div class="fhead"><b>${ativo.titulo}${rv?` <button class="sair" data-bid="${esc(ativo.id)}">fechar ✕</button>`:""}</b><span>${ativo.st.acertos} ${ativo.st.acertos===1?"acerto":"acertos"} · ${ativo.st.feitas}/${ativo.st.total}${ativo.meta?` · meta ${ativo.meta}`:""}</span></div><div class="dots">${dots}</div>${qCard(Object.assign({dia:dia,_total:qs.length},q),i,r,"foco",ativo.id)}<div class="fnav"><button class="btn-ant" id="ant" data-bid="${esc(ativo.id)}" data-i="${i-1}" ${i===0?"disabled":""}>‹ Anterior</button>${avancar}</div></section>`;
+  }
+  // com questão ativa: só a questão no topo; pílula fechada e rodadas anteriores ficam abaixo
+  main.innerHTML = ativo ? nav+pil+corpo+futuro+resumos : nav+themes+futuro+pil+resumos+fim+adiantar+mais;
+}
+
+const TAGS_SEMANA=[{ti:["redes"],bas:["portugues"]},{ti:["redes","monitoramento"],bas:["dir_const","dir_adm"]},{ti:["so","hardware","nuvem"],bas:["dir_adm"]},{ti:["seguranca"],bas:["dir_adm","gestao_publica"]},{ti:["bd"],bas:["lgpd","dir_adm"]},{ti:["gestao"],bas:["leg_municipal","gestao_publica"]},{ti:["web","nuvem"],bas:["leg_municipal","dir_adm"]},{ti:["ti_geral","informatica"],bas:["rlm","informatica"]},{ti:[],bas:["portugues","rlm"]},{ti:[],bas:["portugues","rlm"]},{ti:[],bas:["portugues","rlm"]}];
+const TI_TAGS=["bd","seguranca","so","redes","gestao","web","nuvem","hardware","monitoramento","informatica","ti_geral"];
+function tagsDoDia(dd){ return TAGS_SEMANA[Math.max(0,semanaDe(dd))]||{ti:[],bas:[]}; }
+function disponiveis(){ const usados=new Set(); extras.forEach(x=>(x.questoes||[]).forEach(q=>q.origem&&usados.add(q.origem))); return [...banco.values()].filter(b=>!usados.has(b.id)); }
+function h32(str){ let h=2166136261; for(let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619); } return h>>>0; }
+async function puxarDoBanco(){
+  if(!db) return; const xs=extrasDe(dia), n=(xs.length?xs[xs.length-1].n:0)+1, xid=dia+"-x"+n, tags=tagsDoDia(dia);
+  const disp=disponiveis().sort((a,b)=>h32(a.id+xid)-h32(b.id+xid)), ehTI=b=>(b.tags||[]).some(t=>TI_TAGS.includes(t));
+  const ja=new Set(), pega=(lista,qtd)=>lista.filter(b=>!ja.has(b.id)).slice(0,Math.max(0,qtd)).map(b=>{ja.add(b.id);return b;});
+  let ti=pega(disp.filter(b=>ehTI(b)&&(b.tags||[]).some(t=>tags.ti.includes(t))),6);
+  ti=ti.concat(pega(disp.filter(ehTI),6-ti.length));
+  let ba=pega(disp.filter(b=>!ehTI(b)&&(b.tags||[]).some(t=>tags.bas.includes(t))),4);
+  ["portugues","rlm"].forEach(t=>{ if(ba.length<4) ba=ba.concat(pega(disp.filter(b=>(b.tags||[]).includes(t)),4-ba.length)); });
+  if(ba.length<4) ba=ba.concat(pega(disp.filter(b=>!ehTI(b)),4-ba.length));
+  let todas=ti.concat(ba); if(todas.length<10) todas=todas.concat(pega(disp,10-todas.length));
+  if(!todas.length){ toast("O banco não tem mais questões disponíveis. Use “Gerar com o Claude” ou peça ao Claude no chat para abastecer o banco."); render(); return; }
+  const questoes=todas.map((b,i)=>Object.assign({id:xid+"-"+String(i+1).padStart(2,"0"),origem:b.id,materia:b.materia,assunto:b.assunto,enunciado:b.enunciado,alts:b.alts,correta:b.correta,comentario:b.comentario||"",extra:true},b.fonte?{fonte:b.fonte}:{},b.texto_base?{texto_base:b.texto_base}:{}));
+  try{ await db.collection("extras").doc(xid).set({dia,n,criada:Date.now(),fonte:"banco",questoes}); }catch(e){ toast("Não salvou as questões extras. Tente de novo."); }
+  render(); window.scrollTo(0,0);
+}
+async function refazerExtra(xid){
+  const x=extras.get(xid); if(!x||!db) return;
+  const xs=extrasDe(dia), n=(xs.length?xs[xs.length-1].n:0)+1, nid=dia+"-x"+n;
+  const erradas=(x.questoes||[]).filter(q=>resp.get(q.id)&&!resp.get(q.id).acerto);
+  const disp=disponiveis().sort((a,b)=>h32(a.id+nid)-h32(b.id+nid)), ja=new Set(), dt=tagsDoDia(dia);
+  const itens=[];
+  erradas.forEach((q,k)=>{
+    itens.push(embaralha(Object.assign({},q,{origem:q.origem||q.id}),n*31+k+7));
+    const b0=banco.get(q.origem), tags=(b0&&b0.tags)||(q.materia==="TI"?dt.ti:dt.bas);
+    const sim=disp.find(b=>!ja.has(b.id)&&(b.tags||[]).some(t=>tags.includes(t))) || disp.find(b=>!ja.has(b.id)&&b.assunto===q.assunto);
+    if(sim){ ja.add(sim.id); itens.push(Object.assign({origem:sim.id,materia:sim.materia,assunto:sim.assunto,enunciado:sim.enunciado,alts:sim.alts,correta:sim.correta,comentario:sim.comentario||""},sim.fonte?{fonte:sim.fonte}:{},sim.texto_base?{texto_base:sim.texto_base}:{})); }
+  });
+  const questoes=itens.map((q,i)=>Object.assign({},q,{id:nid+"-"+String(i+1).padStart(2,"0"),extra:true}));
+  try{ await db.collection("extras").doc(nid).set({dia,n,base:xid,criada:Date.now(),fonte:"refazer",questoes}); }catch(e){ toast("Não salvou o REFAZER. Tente de novo."); }
+  render(); window.scrollTo(0,0);
+}
+async function explicarComClaude(qid){
+  const q=qIndex().get(qid); if(!q||!q.origem||explicando.has(qid)) return;
+  if(!sample){ toast("Para explicar, permita que o app use o Claude (aparece um pedido na primeira vez)."); return; }
+  explicando.add(qid); render();
+  const prompt=`Explique, para um candidato ao cargo de Analista de TI (banca Consulplan), por que o gabarito oficial desta questão é a alternativa ${L[q.correta]} e por que cada uma das outras está errada. Português do Brasil, de 3 a 6 frases, direto ao ponto, use **negrito** só nos termos-chave e não repita o enunciado.\n\n${q.texto_base?"Texto-base: "+String(q.texto_base).slice(0,3000)+"\n\n":""}Enunciado: ${q.enunciado}\nAlternativas: ${q.alts.map((a,k)=>L[k]+") "+a).join(" | ")}\nGabarito oficial: ${L[q.correta]}`;
+  try{
+    const r=await sample(prompt,{modelTier:"default",cache:false}), txt=String(r.text||"").trim();
+    if(txt){ const b=banco.get(q.origem), alvo=(b&&b._doc)||q.origem; await db.collection("banco").doc(alvo).update(alvo===q.origem?{comentario:txt}:{itens:{[q.origem]:{comentario:txt}}}); ocultar.delete(qid); }
+  }catch(e){ if(e&&e.code==="not_granted") sample=null; toast(e&&e.code==="rate_limited"?"Limite de uso do Claude atingido agora. Tente mais tarde.":"Não consegui explicar agora. Tente de novo."); }
+  explicando.delete(qid); render();
+}
+async function gerarExtra(){
+  const d=dias.get(dia); if(!d||!db) return;
+  if(!sample){ toast("Para gerar questões novas, permita que o app use o Claude (aparece um pedido na primeira vez)."); return; }
+  const xs=extrasDe(dia), n=(xs.length?xs[xs.length-1].n:0)+1, xid=dia+"-x"+n;
+  gerandoExtra=dia; render(); window.scrollTo(0,document.body.scrollHeight);
+  const qi=qIndex(), vistas=[...qi.values()].filter(q=>q.dia===dia).map(q=>q.enunciado.slice(0,90));
+  const erroPor=new Map(); [...resp.values()].forEach(r=>{ const o=erroPor.get(r.assunto)||{n:0,e:0}; o.n++; if(!r.acerto)o.e++; erroPor.set(r.assunto,o); });
+  const fracos=[...erroPor.entries()].filter(([k,o])=>o.e>0).sort((a,b)=>b[1].e/b[1].n-a[1].e/a[1].n).slice(0,5).map(([k])=>k);
+  const modelos=[...qi.values()].filter(x=>x.fonte).slice(-40).filter((x,i)=>i%13===0).slice(0,3).map(x=>({enunciado:x.enunciado,alternativas:x.alts}));
+  const prompt=`Você é elaborador de questões da banca Consulplan para o concurso de Analista de Tecnologia da Informação da Câmara Municipal de Cristalina/GO (prova com 4 alternativas, A a D). Crie 10 questões NOVAS para o dia de estudo abaixo: 6 de TI sobre "${d.ti}" e 4 de ${d.basico.materia} sobre "${d.basico.tema}". Use a pílula de teoria como referência de conteúdo, mas pode ir além dela dentro do mesmo tema. Dê preferência, quando couber no tema, a estes assuntos em que o candidato mais erra: ${JSON.stringify(fracos)}.
+
+Regras: português do Brasil; tecnicamente exatas; 4 alternativas plausíveis e uma única correta; varie a posição da correta; varie os formatos como a banca faz (enunciado com contexto prático, assertivas I/II/III com "Está correto o que se afirma em", "assinale a INCORRETA", sequência V/F); não repita estas questões já vistas hoje: ${JSON.stringify(vistas)}; comentário de 2 a 4 frases explicando a correta e o erro das outras, sem citar letras.
+
+Pílula do dia:
+${String(d.pilula||"").slice(0,2500)}
+
+Modelos de estilo (questões reais da banca; não copie o conteúdo):
+${JSON.stringify(modelos)}
+
+Responda somente com JSON: {"questoes":[{"materia":"TI" ou "${d.basico.materia}","assunto":"...","enunciado":"...","alts":["...","...","...","..."],"correta":0,"comentario":"..."}]} onde "correta" é o índice 0 a 3.`;
+  let qs=[];
+  try{
+    const r=await sample.json(prompt,{modelTier:"default",cache:false});
+    (r&&Array.isArray(r.questoes)?r.questoes:[]).forEach(q=>{
+      if(q&&typeof q.enunciado==="string"&&Array.isArray(q.alts)&&q.alts.length===4&&q.alts.every(a=>typeof a==="string")&&Number.isInteger(q.correta)&&q.correta>=0&&q.correta<4)
+        qs.push({materia:String(q.materia||"TI"),assunto:String(q.assunto||""),enunciado:q.enunciado,alts:q.alts,correta:q.correta,comentario:String(q.comentario||""),nova:true,extra:true});
+    });
+  }catch(e){ if(e&&e.code==="not_granted") sample=null; toast(e&&e.code==="rate_limited"?"Limite de uso do Claude atingido agora. Tente mais tarde.":"Não consegui gerar as questões agora. Toque de novo em alguns instantes."); }
+  if(qs.length){
+    const ti=qs.filter(q=>q.materia==="TI"), ou=qs.filter(q=>q.materia!=="TI");
+    const questoes=[...ti,...ou].map((q,i)=>Object.assign({id:xid+"-"+String(i+1).padStart(2,"0")},q));
+    try{ await db.collection("extras").doc(xid).set({dia,n,criada:Date.now(),questoes}); }catch(e){ toast("Não salvou as questões extras. Tente de novo."); }
+  }
+  gerandoExtra=null; render(); window.scrollTo(0,0);
+}
+
+async function refazer(tid){
+  const ts=tentativas(dia), base=ts.find(x=>x.id===tid); if(!base||!db) return;
+  const n=ts[ts.length-1].n+1, rid=dia+"-r"+n, certas=base.questoes.filter(q=>resp.get(q.id)?.acerto), erradas=base.questoes.filter(q=>!resp.get(q.id)?.acerto);
+  gerando=dia; render(); window.scrollTo(0,document.body.scrollHeight);
+  let novas=[], gerada=0;
+  if(sample && erradas.length){
+    const lista=erradas.map(q=>({origem:q.origem||q.id,materia:q.materia,assunto:q.assunto,enunciado:q.enunciado,alternativas:q.alts,correta:L[q.correta],comentario:q.comentario}));
+    const modelos=[...qIndex().values()].filter(x=>x.fonte&&x.materia===(erradas[0]||{}).materia).slice(0,3).map(x=>({enunciado:x.enunciado,alternativas:x.alts}));
+    const prompt=`Você é elaborador de questões da banca Consulplan para o concurso de Analista de Tecnologia da Informação da Câmara Municipal de Cristalina/GO. O candidato errou as questões abaixo. Para CADA uma, crie UMA questão nova que cobre o MESMO conceito, com enunciado e alternativas diferentes (não copie nem apenas reordene; mude o contexto ou o ângulo da pergunta). Regras: português do Brasil; 4 alternativas plausíveis e uma única correta; varie a posição da correta; comentário de 2 a 4 frases explicando por que a correta está certa e por que as outras estão erradas; seja tecnicamente exato.\n\nQuestões erradas (JSON):\n${JSON.stringify(lista)}\n\nImite o estilo destas questões REAIS da banca (enunciados contextualizados, assertivas I/II/III, “assinale a INCORRETA”, V/F), sem copiar o conteúdo delas:\n${JSON.stringify(modelos)}\n\nResponda somente com JSON neste formato: {"questoes":[{"origem":"<origem da questão errada>","materia":"...","assunto":"...","enunciado":"...","alts":["...","...","...","..."],"correta":0,"comentario":"..."}]} onde "correta" é o índice 0 a 3 da alternativa certa.`;
+    try{
+      const r=await sample.json(prompt,{modelTier:"default",cache:false});
+      (r&&Array.isArray(r.questoes)?r.questoes:[]).forEach(q=>{
+        if(q&&typeof q.enunciado==="string"&&Array.isArray(q.alts)&&(q.alts.length===4||q.alts.length===5)&&q.alts.every(a=>typeof a==="string")&&Number.isInteger(q.correta)&&q.correta>=0&&q.correta<q.alts.length)
+          novas.push({origem:String(q.origem||""),materia:String(q.materia||"TI"),assunto:String(q.assunto||""),enunciado:q.enunciado,alts:q.alts,correta:q.correta,comentario:String(q.comentario||""),nova:true});
+      });
+    }catch(e){ if(e&&e.code==="not_granted") sample=null; toast(e&&e.code==="rate_limited"?"Limite de uso do Claude atingido agora; repeti as erradas com alternativas embaralhadas.":"Não consegui gerar questões novas; repeti as erradas com alternativas embaralhadas."); }
+  }
+  gerada=novas.length;
+  const faltam=erradas.filter(q=>!novas.some(v=>v.origem===(q.origem||q.id)));
+  const itens=[...certas.map(q=>embaralha(Object.assign({},q,{origem:q.origem||q.id}),n*31+q.id.length)), ...novas, ...faltam.map(q=>embaralha(Object.assign({},q,{origem:q.origem||q.id}),n*17+3))];
+  const ord=itens.map((q,i)=>[((i*7919+n*104729)%1009),q]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
+  const questoes=ord.map((q,i)=>Object.assign({id:rid+"-"+String(i+1).padStart(2,"0"),origem:q.origem,materia:q.materia,assunto:q.assunto,enunciado:q.enunciado,alts:q.alts,correta:q.correta,comentario:q.comentario,nova:!!q.nova},q.fonte&&!q.nova?{fonte:q.fonte}:{},q.texto_base&&!q.nova?{texto_base:q.texto_base}:{}));
+  try{ await db.collection("rodadas").doc(rid).set({dia,n,base:tid,gerada,criada:Date.now(),questoes}); }
+  catch(e){ toast("Não salvou a rodada. Toque em REFAZER de novo."); }
+  gerando=null; fechado.add("t:"+tid); render(); window.scrollTo(0,0);
+}
+
+function renderAtrasadas(){
+  const a=atrasadas();
+  main.innerHTML = `<h2 class="sec" style="font:700 20px var(--display);margin:0">Dias atrasados</h2>` + (a.length
+    ? `<div class="list">${a.map(x=>`<button class="row" data-dia="${x.dia}"><span>${fmt(x.dia,{weekday:"long",day:"numeric",month:"long"})}<small>${esc((dias.get(x.dia)||{}).ti||"")}</small></span><span class="tag">${x.pend} de ${x.total}</span></button>`).join("")}</div><p class="note">Faça um atrasado por vez, junto com o do dia, para não acumular.</p>`
+    : `<div class="card empty"><h3>Nada atrasado</h3><p>Todos os dias anteriores estão em dia. Continue assim.</p></div>`);
+}
+
+function pctClass(p){ return p<50?"low":p<70?"mid":"high"; }
+function renderDesempenho(){
+  const qi=qIndex(), rs=[...resp.values()];
+  if(!rs.length){ main.innerHTML=`<div class="card empty"><h3>Sem respostas ainda</h3><p>Seu percentual por matéria e por assunto aparece aqui depois das primeiras questões. A aprovação exige 50% na objetiva, mas a discursiva só é corrigida para os 20 primeiros, então a meta é passar de 70%.</p></div>`; return; }
+  const ac=rs.filter(r=>r.acerto).length, por=(key)=>{ const m=new Map(); rs.forEach(r=>{ const k=r[key]||"—"; const o=m.get(k)||{n:0,a:0}; o.n++; if(r.acerto)o.a++; m.set(k,o); }); return [...m.entries()].map(([k,o])=>({k,n:o.n,a:o.a,p:Math.round(o.a/o.n*100)})); };
+  const mats=por("materia").sort((a,b)=>a.p-b.p), ass=por("assunto").filter(x=>x.n>=2).sort((a,b)=>a.p-b.p).slice(0,8);
+  const diasFeitos=new Set(rs.map(r=>r.dia)).size;
+  const bar=x=>`<div class="bar"><div class="lbl"><span>${esc(x.k)}</span><span>${x.p}% · ${x.a}/${x.n}</span></div><div class="track"><div class="fill ${pctClass(x.p)}" style="width:${x.p}%"></div></div></div>`;
+  main.innerHTML=`<div class="stats"><div class="stat"><b>${Math.round(ac/rs.length*100)}%</b><span>acerto geral</span></div><div class="stat"><b>${rs.length}</b><span>questões respondidas</span></div><div class="stat"><b>${diasFeitos}</b><span>dias estudados</span></div><div class="stat"><b>${erros().length}</b><span>erros para revisar</span></div></div>
+  <h3 class="sec">Por matéria</h3><div class="card bars">${mats.map(bar).join("")}</div>
+  <h3 class="sec">Assuntos mais fracos</h3>${ass.length?`<div class="card bars">${ass.map(bar).join("")}</div>`:`<p class="note">Aparece quando houver pelo menos 2 questões do mesmo assunto.</p>`}
+  <p class="note">Na prova, TI vale peso 2: 10 questões somam 20 dos 60 pontos.</p>`;
+}
+
+function renderErros(){
+  const qi=qIndex(), es=erros().sort((a,b)=>(a.ts||0)-(b.ts||0));
+  if(!es.length){ main.innerHTML=`<div class="card empty"><h3>Caderno de erros vazio</h3><p>Toda questão errada vem para cá. Refaça alguns dias depois: quando acertar, ela sai do caderno.</p></div>`; return; }
+  if(revisao && !revisao.fim){
+    const ids=revisao.ids.filter(id=>qi.has(id)&&resp.has(id)), n=ids.length;
+    const rr=id=>{ const r=resp.get(id); return Object.assign({},r,{refeita:r.refeita&&r.refeita.ts>=revisao.ini?r.refeita:null}); };
+    const feitas=ids.filter(id=>rr(id).refeita).length, ac=ids.filter(id=>(rr(id).refeita||{}).acerto).length;
+    const prim=ids.findIndex(id=>!rr(id).refeita); let i=cursor.rev; if(i===undefined||i<0||i>=n) i=prim<0?n-1:prim;
+    const r=rr(ids[i]);
+    const dots=ids.map((id,k)=>{ const x=rr(id).refeita; return `<button class="dot${x?(x.acerto?" ok":" bad"):""}${k===i?" cur":""}" data-bid="rev" data-i="${k}" aria-label="Ir para a questão ${k+1}">${k+1}</button>`; }).join("");
+    const proxPend=ids.findIndex((id,k)=>k>i&&!rr(id).refeita), temProx=i<n-1;
+    const avancar = r.refeita ? (feitas===n && proxPend<0 && !temProx ? `<button class="btn-prox" id="fechar" data-bid="rev">Ver resultado ›</button>` : `<button class="btn-prox" id="prox" data-bid="rev" data-i="${proxPend>=0?proxPend:i+1}">Próxima ›</button>`) : "";
+    main.innerHTML=`<section class="foco"><div class="fhead"><b>Caderno de erros</b><span>${ac} ${ac===1?"acerto":"acertos"} · ${feitas}/${n}</span></div><div class="dots">${dots}</div>${qCard(Object.assign({_total:n},qi.get(ids[i])),i,r,"revisao","rev")}<div class="fnav"><button class="btn-ant" id="ant" data-bid="rev" data-i="${i-1}" ${i===0?"disabled":""}>‹ Anterior</button>${avancar}</div></section>`;
+    return;
+  }
+  let topo="";
+  if(revisao && revisao.fim){ const ids=revisao.ids, ac=ids.filter(id=>{ const f=(resp.get(id)||{}).refeita; return f&&f.ts>=revisao.ini&&f.acerto; }).length;
+    topo=`<div class="card resultado ${ac>=8?"ok":""}"><h3>Revisão: ${ac} de ${ids.length}</h3><p>As que você acertou saíram do caderno. As que errou continuam nele para a próxima revisão.</p></div>`; }
+  const pode=es.length>=10;
+  main.innerHTML=topo+(pode
+    ? `<div class="card resultado"><h3>${es.length} questões no caderno</h3><p>Refaça 10 de cada vez, uma por vez. Acertou, sai do caderno.</p><button class="btn-refazer" id="rev-iniciar">REFAZER 10</button></div>`
+    : `<div class="card empty"><h3>${es.length} ${es.length===1?"questão":"questões"} no caderno</h3><p>Ao juntar 10 erradas, aparece aqui o botão para refazer (faltam ${10-es.length}).</p></div>`);
+}
+
+const abertos = new Map(), rolagem = new Map();
+document.addEventListener("toggle", ev=>{ const k=ev.target.dataset&&ev.target.dataset.k; if(k) abertos.set(k, ev.target.open); }, true);
+function render(){
+  main.querySelectorAll("details[data-k] .md").forEach(m=>rolagem.set(m.closest("details").dataset.k, m.scrollTop));
+  header(); ({hoje:renderHoje,atrasadas:renderAtrasadas,desempenho:renderDesempenho,erros:renderErros})[view]();
+  main.querySelectorAll("details[data-k]").forEach(d=>{ const k=d.dataset.k; if(abertos.has(k)) d.open=abertos.get(k); const m=d.querySelector(".md"); if(m&&rolagem.has(k)) m.scrollTop=rolagem.get(k); });
+}
+
+document.addEventListener("click",async ev=>{
+  const tab=ev.target.closest("nav.tabs button"); if(tab){ view=tab.dataset.v; if(view==="hoje") dia=dia||hoje(); render(); window.scrollTo(0,0); return; }
+  if(ev.target.closest("#prev")){ dia=addDias(dia,-1); revendo=null; render(); return; }
+  if(ev.target.closest("#next")){ dia=addDias(dia,1); revendo=null; render(); return; }
+  if(ev.target.closest("#adiantar")){ dia=addDias(dia,1); render(); window.scrollTo(0,0); return; }
+  const dt=ev.target.closest(".dot[data-bid]"); if(dt){ cursor[dt.dataset.bid]=+dt.dataset.i; render(); return; }
+  const nv=ev.target.closest("#prox,#ant"); if(nv){ cursor[nv.dataset.bid]=+nv.dataset.i; render(); window.scrollTo(0,0); return; }
+  const fc=ev.target.closest("#fechar,.sair"); if(fc){ if(fc.dataset.bid==="rev"&&revisao) revisao.fim=true; else { fechado.add(fc.dataset.bid); if(revendo===fc.dataset.bid) revendo=null; } render(); window.scrollTo(0,0); return; }
+  const rvb=ev.target.closest(".rever[data-bid]"); if(rvb){ revendo=rvb.dataset.bid; cursor[revendo]=0; fechado.delete(revendo); render(); window.scrollTo(0,0); return; }
+  if(ev.target.closest("#rev-iniciar")){ revisao={ids:erros().sort((a,b)=>(a.ts||0)-(b.ts||0)).slice(0,10).map(r=>r.qid),ini:Date.now()}; delete cursor.rev; render(); window.scrollTo(0,0); return; }
+  if(ev.target.closest("#ir-caderno")){ view="erros"; revisao={ids:erros().sort((a,b)=>(a.ts||0)-(b.ts||0)).slice(0,10).map(r=>r.qid),ini:Date.now()}; delete cursor.rev; render(); window.scrollTo(0,0); return; }
+  const rx=ev.target.closest(".refazer-x[data-x]"); if(rx){ rx.disabled=true; revendo=null; refazerExtra(rx.dataset.x); return; }
+  const ex=ev.target.closest(".explic[data-q]"); if(ex){ const k=ex.dataset.q; ocultar.has(k)?ocultar.delete(k):ocultar.add(k); render(); return; }
+  const mx=ev.target.closest("#mais"); if(mx){ if(gerandoExtra) return; mx.disabled=true; puxarDoBanco(); return; }
+  const gx=ev.target.closest("#gerar"); if(gx){ if(gerandoExtra) return; gx.disabled=true; gerarExtra(); return; }
+  const ia=ev.target.closest(".explicar-ia[data-q]"); if(ia){ explicarComClaude(ia.dataset.q); return; }
+  const rf=ev.target.closest("#refazer"); if(rf){ if(gerando) return; rf.disabled=true; refazer(rf.dataset.t); return; }
+  const row=ev.target.closest(".row[data-dia]"); if(row){ dia=row.dataset.dia; view="hoje"; render(); window.scrollTo(0,0); return; }
+  const alt=ev.target.closest(".alt[data-q]"); if(!alt||alt.disabled) return;
+  const q=qIndex().get(alt.dataset.q), k=+alt.dataset.k, modo=alt.dataset.modo;
+  if(!q) return;
+  if(!db){ toast("Abra pelo claude.ai com sua conta para salvar as respostas."); return; }
+  if(alt.dataset.bid) cursor[alt.dataset.bid]=+alt.dataset.i;
+  alt.closest(".alts").querySelectorAll(".alt").forEach(b=>b.disabled=true); alt.classList.add("marc");
+  const acerto = k===q.correta, ref=db.collection("respostas").doc(q.id);
+  try{
+    if(modo==="refazer"){ await ref.update({refeita:{escolha:k,acerto,ts:Date.now()}}); }
+    else { const extra=Object.assign(q.origem?{origem:q.origem,rodada:true}:{},q.extra?{extra:true}:{}); await ref.set(Object.assign({qid:q.id,dia:q.dia,materia:q.materia,assunto:q.assunto,escolha:k,acerto,ts:Date.now()},extra)); }
+  }catch(e){ alt.closest(".alts").querySelectorAll(".alt").forEach(b=>b.disabled=false); alt.classList.remove("marc"); toast(e&&e.code==="quota_exceeded"?"O banco do app está cheio. Avise o Claude no chat.":"Não salvou. Verifique a conexão e toque de novo."); }
+});
+
+render();
+(async()=>{
+  try{ db = window.claude ? await window.claude.use("db") : null; }catch(e){ db=null; }
+  if(!db){ loaded.dias=true; render(); toast("Modo leitura: abra pelo claude.ai para carregar e salvar."); return; }
+  db.collection("dias").onSnapshot(s=>{ dias=new Map(s.docs.map(d=>[d.id,Object.assign({dia:d.id},d.data())])); loaded.dias=true; render(); }, ()=>{ loaded.dias=true; render(); });
+  db.collection("respostas").onSnapshot(s=>{ resp=new Map(s.docs.map(d=>[d.id,d.data()])); loaded.resp=true; render(); }, ()=>{});
+  db.collection("rodadas").onSnapshot(s=>{ rodadas=new Map(s.docs.map(d=>[d.id,Object.assign({id:d.id},d.data())])); render(); }, ()=>{});
+  db.collection("banco").onSnapshot(s=>{ const m=new Map(); s.docs.forEach(d=>{ const v=d.data(); if(v.itens) Object.keys(v.itens).forEach(id=>m.set(id,Object.assign({id:id,_doc:d.id},v.itens[id]))); else m.set(d.id,Object.assign({id:d.id,_doc:d.id},v)); }); banco=m; render(); }, ()=>{});
+  db.collection("extras").onSnapshot(s=>{ extras=new Map(s.docs.map(d=>[d.id,Object.assign({id:d.id},d.data())])); render(); }, ()=>{});
+  try{ sample = await window.claude.use("sample"); }catch(e){ sample=null; }
+})();
+setInterval(()=>{ const h=hoje(); if(h!==render.h){ if(render.h&&dia===render.h) dia=h; render.h=h; render(); } }, 60000); render.h=hoje();
+})();
+</script>
